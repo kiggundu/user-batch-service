@@ -27,7 +27,8 @@ router.post('/', function(req, res, next) {
         console.log("responses=====");
         Promise.all(responses)
         .then((result) => {
-            res.send(result);
+            console.log("all responses=====", res.statusCode);
+            res.send(result.statusCode);
         })
         .catch((err) => {
             res.send(err);
