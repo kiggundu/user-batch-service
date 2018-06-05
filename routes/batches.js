@@ -19,16 +19,17 @@ router.post('/', function(req, res, next) {
                 body: user.body,
                 json: true // Automatically stringifies the body to JSON
             };
-            return rp(options).then((res) => {res.statusCode})
+            return rp(options).then((res) => res.statusCode);
         });
 
         console.log("responses=====");
         console.log(responses);
         console.log("responses=====");
+        
         Promise.all(responses)
         .then((result) => {
-            console.log("all responses=====", res.statusCode);
-            res.send(result.statusCode);
+            console.log("all responses=====", result);
+            res.send(result);
         })
         .catch((err) => {
             res.send(err);
