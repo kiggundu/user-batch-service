@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var rp = require('request-promise');
 
 /* Post batches. */
 router.post('/', function(req, res, next) {
@@ -9,27 +10,35 @@ router.post('/', function(req, res, next) {
         // console.log("req.body========================");
         const baseUrl = req.body.endpoint.url;
         const userBatchUpdates = req.body.payload;
+
+        responses = userBatchUpdates.map((user) => {
         
-        userBatchUpdates.map((user) => {
-            request.post(
-                baseUrl + "/" + user.path,
-                user.body,
-                function (error, response, body) {
-                    if (!error && response.statusCode == 200) {
-                        console.log(body)
-                    }
-                    console.log(response.statusCode)
-                }
-            );
+            var options = {
+                method: 'POST',
+                uri: baseUrl + "/" + user.path,
+                body: user.body,
+                json: true // Automatically stringifies the body to JSON
+            };
+            return rp(options).then((res) => {res.statusCode})
         });
 
+        console.log("responses=====");
+        console.log(responses);
+        console.log("responses=====");
+        Promise.all(responses)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            res.send(err);
+            
+        })
     }
     catch(error){
         console.log(error);
     }
 
 
-  res.send('Batch endpoint is live');
 });
 
 module.exports = router;
