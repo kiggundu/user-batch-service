@@ -14,7 +14,7 @@ router.post('/', function(req, res, next) {
         responses = userBatchUpdates.map((user) => {
         
             var options = {
-                method: 'POST',
+                method: 'PUT',
                 uri: baseUrl + "/" + user.path,
                 body: user.body,
                 json: true // Automatically stringifies the body to JSON
