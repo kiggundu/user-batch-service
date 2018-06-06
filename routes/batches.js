@@ -29,7 +29,7 @@ router.post('/', function(req, res1, next) {
                 }
                 catch(err){
                     console.log('====err', err)
-                    return err.statusCodeError;
+                    return err.statusCode;
                 }
             })().then((result) => {
                 console.log("-=-=-result=-=", result)
@@ -39,7 +39,8 @@ router.post('/', function(req, res1, next) {
                     res1.send(results);
 
                 }
-            });
+            })
+            ;
         
         });
 
