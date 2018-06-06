@@ -4,37 +4,45 @@ var request = require('request');
 var rp = require('request-promise');
 
 /* Post batches. */
-router.post('/', function(req, res, next) {
+router.post('/', function(req, res1, next) {
     try{
         // console.log(req.body);
         // console.log("req.body========================");
         const baseUrl = req.body.endpoint.url;
         const userBatchUpdates = req.body.payload;
+        var resultsIn = 0;
+        const results = [];
 
         responses = userBatchUpdates.map((user) => {
+            return (async () => {
+                console.log("----->", user.body)
+                var options = {
+                    method: req.body.endpoint.verb,
+                    uri: baseUrl + "/" + user.path,
+                    body: user.body,
+                    json: true // Automatically stringifies the body to JSON
+                };
+                try{
+                    res = await rp(options);
+                    console.log('====res', res)
+                    return res;
+                }
+                catch(err){
+                    console.log('====err', err)
+                    return err.statusCodeError;
+                }
+            })().then((result) => {
+                console.log("-=-=-result=-=", result)
+                results.push(result);
+                if(results.length >= userBatchUpdates.length){
+                    console.log("sending results")
+                    res1.send(results);
+
+                }
+            });
         
-            var options = {
-                method: 'PUT',
-                uri: baseUrl + "/" + user.path,
-                body: user.body,
-                json: true // Automatically stringifies the body to JSON
-            };
-            return rp(options).then((res) => res.statusCode);
         });
 
-        console.log("responses=====");
-        console.log(responses);
-        console.log("responses=====");
-        
-        Promise.all(responses)
-        .then((result) => {
-            console.log("all responses=====", result);
-            res.send(result);
-        })
-        .catch((err) => {
-            res.send(err);
-            
-        })
     }
     catch(error){
         console.log(error);
